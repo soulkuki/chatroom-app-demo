@@ -401,22 +401,23 @@ class _ChatInputBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              children: [
-                _ThinkingToggle(
-                  enabled: thinkingEnabled,
-                  isDisabled: isSending,
-                  onChanged: onThinkingChanged,
-                ),
-                const SizedBox(width: 8),
-                _ModelSelector(
-                  selectedModel: selectedModel,
-                  isDisabled: isSending,
-                  onChanged: onModelChanged,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+            // 后续需要恢复深度思考和模型切换入口时，取消注释这一段。
+            // Row(
+            //   children: [
+            //     _ThinkingToggle(
+            //       enabled: thinkingEnabled,
+            //       isDisabled: isSending,
+            //       onChanged: onThinkingChanged,
+            //     ),
+            //     const SizedBox(width: 8),
+            //     _ModelSelector(
+            //       selectedModel: selectedModel,
+            //       isDisabled: isSending,
+            //       onChanged: onModelChanged,
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(height: 10),
             _InputField(
               controller: controller,
               isSending: isSending,
@@ -429,6 +430,7 @@ class _ChatInputBar extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _ThinkingToggle extends StatelessWidget {
   const _ThinkingToggle({
     required this.enabled,
@@ -484,6 +486,7 @@ class _ThinkingToggle extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _ModelSelector extends StatelessWidget {
   const _ModelSelector({
     required this.selectedModel,

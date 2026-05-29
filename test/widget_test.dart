@@ -13,8 +13,8 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     expect(find.text('AI问答'), findsOneWidget);
-    expect(find.text('深度思考'), findsOneWidget);
-    expect(find.text('V4 Flash'), findsOneWidget);
+    expect(find.text('深度思考'), findsNothing);
+    expect(find.text('V4 Flash'), findsNothing);
     expect(find.byIcon(Icons.graphic_eq), findsOneWidget);
     expect(find.text('发消息或按住说话...'), findsOneWidget);
 
@@ -30,7 +30,7 @@ void main() {
     expect(find.textContaining('我收到了：你好'), findsOneWidget);
   });
 
-  testWidgets('Chat page sends selected model and shows reasoning stream', (
+  testWidgets('Chat page sends default model without reasoning', (
     WidgetTester tester,
   ) async {
     final api = _FakeChatApi();
@@ -42,25 +42,15 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('V4 Flash'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('V4 Pro').last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('深度思考'));
-    await tester.pump();
-
     await tester.enterText(find.byType(TextField), '比较 9.11 和 9.8');
     await tester.tap(find.byTooltip('发送'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    expect(api.model, DeepSeekModel.pro.id);
-    expect(api.thinkingEnabled, isTrue);
-    expect(find.text('思考过程'), findsOneWidget);
-    await tester.tap(find.text('思考过程'));
-    await tester.pumpAndSettle();
-
-    expect(find.textContaining('先比较整数位'), findsOneWidget);
+    expect(api.model, DeepSeekModel.flash.id);
+    expect(api.thinkingEnabled, isFalse);
+    expect(find.text('思考过程'), findsNothing);
+    expect(find.textContaining('先比较整数位'), findsNothing);
     expect(find.textContaining('9.8 更大'), findsOneWidget);
   });
 
