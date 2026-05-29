@@ -113,7 +113,7 @@ class _ChatPageState extends State<ChatPage> {
             ? ''
             : '${current.content.trim()}\n\n';
         _messages[assistantIndex] = current.copyWith(
-          content: '$prefix发送失败：$error',
+          content: '$prefix发送失败：${_formatSendError(error)}',
         );
       });
     } finally {
@@ -124,6 +124,19 @@ class _ChatPageState extends State<ChatPage> {
         _scrollToBottom();
       }
     }
+  }
+
+  String _formatSendError(Object error) {
+    final message = error.toString();
+    final normalizedMessage = message.toLowerCase();
+
+    if (normalizedMessage.contains('failed host lookup') ||
+        normalizedMessage.contains('nodename nor servname provided') ||
+        normalizedMessage.contains('socketexception')) {
+      return '无法解析 api.deepseek.com。请检查 iPhone 当前网络、DNS、代理/VPN，或切换到可访问 DeepSeek 的 Wi-Fi/蜂窝网络后重试。';
+    }
+
+    return message;
   }
 
   String? _finishReasonMessage(String finishReason) {
