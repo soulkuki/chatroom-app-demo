@@ -1,4 +1,4 @@
-package com.example.chatroom_app_demo
+package com.richinfo.chatroomdemo
 
 import io.flutter.embedding.android.FlutterActivity
 
