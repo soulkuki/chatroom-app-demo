@@ -63,6 +63,24 @@ void main() {
     expect(find.textContaining('先比较整数位'), findsOneWidget);
     expect(find.textContaining('9.8 更大'), findsOneWidget);
   });
+
+  testWidgets('Chat page unfocuses input when answer area is tapped', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+
+    EditableText editableText = tester.widget(find.byType(EditableText));
+    expect(editableText.focusNode.hasFocus, isTrue);
+
+    await tester.tap(find.textContaining('你好，我是 AI 问答助手'));
+    await tester.pump();
+
+    editableText = tester.widget(find.byType(EditableText));
+    expect(editableText.focusNode.hasFocus, isFalse);
+  });
 }
 
 class _FakeChatApi extends ChatApi {
