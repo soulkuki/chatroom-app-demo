@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'chat_api.dart';
 import 'chat_message.dart';
@@ -252,23 +253,70 @@ class _MessageBubble extends StatelessWidget {
       bottomLeft: Radius.circular(message.isUser ? 16 : 4),
       bottomRight: Radius.circular(message.isUser ? 4 : 16),
     );
+    final bubble = Container(
+      constraints: const BoxConstraints(maxWidth: 320),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(color: bubbleColor, borderRadius: borderRadius),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _BubbleContent(
+            message: message,
+            isStreaming: isStreaming,
+            showReasoning: showReasoning,
+            textColor: textColor,
+          ),
+          if (!message.isUser && message.content.trim().isNotEmpty) ...[
+            const SizedBox(height: 6),
+            _CopyAnswerButton(message: message),
+          ],
+        ],
+      ),
+    );
+    return Align(alignment: alignment, child: bubble);
+  }
+}
+
+class _CopyAnswerButton extends StatelessWidget {
+  const _CopyAnswerButton({required this.message});
+
+  final ChatMessage message;
+
+  Future<void> _copyAnswer(BuildContext context) async {
+    final answer = message.content.trim();
+    if (answer.isEmpty) {
+      return;
+    }
+
+    await Clipboard.setData(ClipboardData(text: answer));
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(const SnackBar(content: Text('已复制回答')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Align(
-      alignment: alignment,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: bubbleColor,
-          borderRadius: borderRadius,
+      alignment: Alignment.centerRight,
+      child: IconButton(
+        tooltip: '复制回答',
+        visualDensity: VisualDensity.compact,
+        style: IconButton.styleFrom(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          foregroundColor: colorScheme.onSurfaceVariant,
+          minimumSize: const Size(28, 28),
+          padding: const EdgeInsets.all(4),
         ),
-        child: _BubbleContent(
-          message: message,
-          isStreaming: isStreaming,
-          showReasoning: showReasoning,
-          textColor: textColor,
-        ),
+        onPressed: () => _copyAnswer(context),
+        icon: const Icon(Icons.copy_rounded, size: 16),
       ),
     );
   }
@@ -307,14 +355,16 @@ class _BubbleContent extends StatelessWidget {
           _ReasoningPanel(reasoningContent: message.reasoningContent),
           const SizedBox(height: 8),
         ],
-        Text(
-          hasContent
-              ? message.content
-              : isStreaming && hasReasoning
-              ? '正在组织回答...'
-              : 'AI 正在回复...',
-          style: TextStyle(color: textColor, fontSize: 15, height: 1.35),
-        ),
+        if (hasContent)
+          SelectableText(
+            message.content,
+            style: TextStyle(color: textColor, fontSize: 15, height: 1.35),
+          )
+        else
+          Text(
+            isStreaming && hasReasoning ? '正在组织回答...' : 'AI 正在回复...',
+            style: TextStyle(color: textColor, fontSize: 15, height: 1.35),
+          ),
       ],
     );
   }
@@ -581,7 +631,7 @@ class _InputField extends StatelessWidget {
               maxLines: 4,
               textInputAction: TextInputAction.send,
               decoration: const InputDecoration(
-                hintText: '发消息或按住说话...',
+                hintText: '有问题，尽管问',
                 border: InputBorder.none,
                 isDense: true,
               ),
@@ -598,7 +648,7 @@ class _InputField extends StatelessWidget {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.add),
+                : const Icon(Icons.send_rounded),
           ),
         ],
       ),
