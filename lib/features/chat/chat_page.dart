@@ -179,17 +179,23 @@ class _ChatPageState extends State<ChatPage> {
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () => FocusScope.of(context).unfocus(),
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  itemCount: _messages.length,
-                  itemBuilder: (context, index) {
-                    return _MessageBubble(
-                      message: _messages[index],
-                      isStreaming: _isSending && index == _messages.length - 1,
-                      showReasoning: _thinkingEnabled,
-                    );
-                  },
+                child: Listener(
+                  onPointerMove: (_) => FocusScope.of(context).unfocus(),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      return _MessageBubble(
+                        message: _messages[index],
+                        isStreaming:
+                            _isSending && index == _messages.length - 1,
+                        showReasoning: _thinkingEnabled,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

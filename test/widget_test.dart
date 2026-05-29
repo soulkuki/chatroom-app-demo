@@ -81,6 +81,24 @@ void main() {
     editableText = tester.widget(find.byType(EditableText));
     expect(editableText.focusNode.hasFocus, isFalse);
   });
+
+  testWidgets('Chat page unfocuses input when answer area is dragged', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+
+    EditableText editableText = tester.widget(find.byType(EditableText));
+    expect(editableText.focusNode.hasFocus, isTrue);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -80));
+    await tester.pump();
+
+    editableText = tester.widget(find.byType(EditableText));
+    expect(editableText.focusNode.hasFocus, isFalse);
+  });
 }
 
 class _FakeChatApi extends ChatApi {
