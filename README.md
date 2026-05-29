@@ -57,6 +57,90 @@ flutter run --dart-define=DEEPSEEK_API_KEY=你的_API_Key
 flutter run -d chrome --dart-define=DEEPSEEK_API_KEY=你的_API_Key
 ```
 
+## 启动模拟器
+
+查看当前可用的模拟器和设备：
+
+```bash
+flutter emulators
+flutter devices
+```
+
+### Android 模拟器
+
+本机已创建 Android 模拟器：
+
+```text
+Pixel_6_API_35
+```
+
+启动 Android 模拟器：
+
+```bash
+flutter emulators --launch Pixel_6_API_35
+```
+
+也可以直接使用 Android SDK 的 emulator 命令启动：
+
+```bash
+/Users/chen/Library/Android/sdk/emulator/emulator -avd Pixel_6_API_35
+```
+
+等待模拟器完全启动后，确认 Flutter 能识别到 Android 设备：
+
+```bash
+flutter devices
+```
+
+然后运行项目到 Android 模拟器：
+
+```bash
+flutter run -d emulator-5554
+```
+
+如果需要带 DeepSeek API Key：
+
+```bash
+flutter run -d emulator-5554 --dart-define=DEEPSEEK_API_KEY=你的_API_Key
+```
+
+启动后保持终端运行，修改 Dart 代码后可在终端输入 `r` 热更新。
+
+### iOS 模拟器
+
+打开 iOS Simulator：
+
+```bash
+open -a Simulator
+```
+
+如果需要从命令行启动指定设备，可以先查看 iOS 模拟器列表：
+
+```bash
+xcrun simctl list devices
+```
+
+例如启动本机已有的 iPhone 14 Pro Max：
+
+```bash
+xcrun simctl boot 94386204-9DD7-473D-B8A1-056543BEBD75
+open -a Simulator
+```
+
+等待 iOS 模拟器启动后，查看 Flutter 设备列表：
+
+```bash
+flutter devices
+```
+
+然后运行项目到 iOS 模拟器：
+
+```bash
+flutter run -d 94386204-9DD7-473D-B8A1-056543BEBD75
+```
+
+如果设备 ID 变化，以 `flutter devices` 输出的 iOS simulator ID 为准。
+
 ### 终端运行与热更新
 
 进入项目根目录后，在终端启动应用：
@@ -153,10 +237,102 @@ flutter test
 flutter build web --dart-define=DEEPSEEK_API_KEY=你的_API_Key
 ```
 
-构建 Android：
+## Android 构建打包
+
+### Debug APK
+
+Debug APK 适合本地调试或快速安装验证：
 
 ```bash
-flutter build apk --dart-define=DEEPSEEK_API_KEY=你的_API_Key
+flutter build apk --debug
+```
+
+产物位置：
+
+```text
+build/app/outputs/flutter-apk/app-debug.apk
+```
+
+### Release APK
+
+Release APK 适合直接发给测试人员安装：
+
+```bash
+flutter build apk --release
+```
+
+带 API Key 构建：
+
+```bash
+flutter build apk --release --dart-define=DEEPSEEK_API_KEY=你的_API_Key
+```
+
+产物位置：
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Release AAB
+
+AAB 适合提交 Google Play Console：
+
+```bash
+flutter build appbundle --release
+```
+
+带 API Key 构建：
+
+```bash
+flutter build appbundle --release --dart-define=DEEPSEEK_API_KEY=你的_API_Key
+```
+
+产物位置：
+
+```text
+build/app/outputs/bundle/release/app-release.aab
+```
+
+### 安装 APK 到 Android 模拟器或真机
+
+确认设备在线：
+
+```bash
+flutter devices
+```
+
+安装 release APK：
+
+```bash
+/Users/chen/Library/Android/sdk/platform-tools/adb install -r build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Android 签名说明
+
+当前 Android 包名：
+
+```text
+com.richinfo.chatroomdemo
+```
+
+Release 构建使用本地签名文件：
+
+```text
+android/key.properties
+android/app/chatroom-release.jks
+```
+
+这两个文件包含敏感签名信息，已被 `.gitignore` 忽略，不要提交到代码仓库。更换正式应用包名、上架 Google Play 或迁移到 CI/CD 时，需要安全备份 keystore，并同步更新签名配置。
+
+### 已验证的 Android 构建命令
+
+以下命令已在本机验证通过：
+
+```bash
+flutter analyze
+flutter build apk --debug
+flutter build apk --release
+flutter build appbundle --release
 ```
 
 ## 使用说明
