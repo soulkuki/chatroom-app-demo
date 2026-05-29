@@ -104,6 +104,8 @@ flutter run -d emulator-5554
 flutter run -d emulator-5554 --dart-define=DEEPSEEK_API_KEY=你的_API_Key
 ```
 
+这条命令适合 Android Debug 调试和热更新。带上 `--dart-define=DEEPSEEK_API_KEY=...` 后，Debug 模式会调用真实 DeepSeek 接口；不带这个参数时会走本地模拟回复。
+
 启动后保持终端运行，修改 Dart 代码后可在终端输入 `r` 热更新。
 
 ### iOS 模拟器
@@ -245,6 +247,12 @@ Debug APK 适合本地调试或快速安装验证：
 
 ```bash
 flutter build apk --debug
+```
+
+带 DeepSeek API Key 构建 Debug APK：
+
+```bash
+flutter build apk --debug --dart-define=DEEPSEEK_API_KEY=你的_API_Key
 ```
 
 产物位置：
